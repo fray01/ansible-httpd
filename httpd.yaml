@@ -1,0 +1,43 @@
+---
+
+- hosts: all
+  vars:
+    _Listen: 80
+    _AllowOverride: All
+    _ServerAdmin: root@localhost
+    _DocumentRoot: "/var/www/html"
+    _ServerName: www.example.com
+
+  tasks:
+    - name: install the current version of httpd
+      package:
+       name: httpd
+       state: present
+ 
+    - name: Httpd's configuration 
+      template:
+        src: _httpd.conf
+        dest: /etc/httpd/conf/httpd.conf
+
+    - name: started http service
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+
+    - name: Allow Http service on firewalld
+      firewalld:
+        service: http
+        permanent: true
+        state: enabled
+
+    - name: restarted service firewalld
+      service:
+        name: httpd
+        state: reloaded
+        enabled: yes
+
+    - name: restarted service Httpd
+      service:
+        name: httpd
+        state: restarted
